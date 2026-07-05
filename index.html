@@ -8,6 +8,7 @@
   <meta property="og:title" content="Deka Lake Needs Fair Rules Before Enforcement Escalates" />
   <meta property="og:description" content="Deka Lake property owners should not have to learn the rules through enforcement. Ask for fair process, clear guidance, and meaningful public engagement." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://dekalakedistrictl-netizen.github.io/deka-lake-fair-process/" />
   <meta name="theme-color" content="#173c2a" />
   <style>
     :root {
@@ -213,6 +214,10 @@
       white-space: pre-wrap;
     }
 
+    .share-textarea {
+      min-height: 190px;
+    }
+
     .radio-row {
       display: grid;
       gap: 10px;
@@ -321,6 +326,7 @@
       <div class="hero-actions">
         <a class="button primary" href="#take-action">Send a message</a>
         <a class="button secondary" href="#why-this-matters">Why this matters</a>
+        <a class="button secondary" href="#share-campaign">Share this</a>
       </div>
     </section>
   </header>
@@ -341,8 +347,6 @@
             <li>Deferral of non-urgent enforcement against existing seasonal-use structures while planning and bylaw review processes are underway, except where there is a verified safety, sewage, riparian, wildfire, environmental, or commercial-use concern.</li>
             <li>Accessible, fair, and realistic transition pathways for existing seasonal-use structures, with clear criteria, practical options, reasonable timelines, and an approach that reflects the history, lot patterns, seasonal use, weather constraints, contractor availability, and rural reality of the Deka Lake / Interlakes area.</li>
             <li>Risk-based enforcement focused on actual hazards and material impacts.</li>
-            <li>Public information about enforcement trends in Area L and Deka Lake.</li>
-            <li>Confirmation of whether any boundary review, service-area review, tax-base study, municipal expansion discussion, or intergovernmental planning process is connected to current enforcement priorities.</li>
           </ol>
         </article>
 
@@ -355,6 +359,19 @@
             <li><a href="https://www.cariboord.ca/media/i11exjcs/bylaws-business-plan-2026.pdf" target="_blank" rel="noopener">CRD 2026 Bylaw Enforcement Business Plan</a></li>
             <li><a href="https://www.cariboord.ca/media/k22nebr1/3501-as-of-february-6-2026.pdf" target="_blank" rel="noopener">South Cariboo Area Zoning Bylaw No. 3501</a></li>
           </ul>
+        </article>
+
+        <article id="share-campaign" class="card">
+          <h2>Share this campaign</h2>
+          <p>Copy the suggested post text, then open Facebook share. Facebook will reliably share the campaign link; if the post text does not appear automatically, paste the copied text into your Facebook post.</p>
+          <label for="socialText">Suggested Facebook post text</label>
+          <textarea id="socialText" class="share-textarea"></textarea>
+          <div class="actions">
+            <button id="copySocial" class="button wide-button" type="button">Copy suggested post text</button>
+            <a id="facebookShare" class="button light-button" href="#" target="_blank" rel="noopener">Open Facebook share</a>
+            <button id="nativeShare" class="button light-button" type="button">Share now</button>
+          </div>
+          <p class="hint">On many phones, “Share now” opens your device’s share sheet. On desktop, use “Open Facebook share” and paste the copied text if needed.</p>
         </article>
       </section>
 
@@ -420,6 +437,12 @@
     ];
 
     const SUBJECT = "Deka Lake needs fair rules before enforcement escalates";
+    const CAMPAIGN_URL = "https://dekalakedistrictl-netizen.github.io/deka-lake-fair-process/";
+    const SOCIAL_TEXT = `Deka Lake property owners should not have to learn the rules through enforcement.
+
+Deka Lake is a rural, seasonal, recreational lake community where families have used and cared for properties for decades, and across generations. Please send a message asking the CRD and MLA for meaningful public engagement, plain-language guidance, realistic transition pathways, and risk-based enforcement focused on genuine hazards.
+
+${CAMPAIGN_URL}`;
 
     const standardTemplate = ({ name, connection, note }) => `Dear MLA Doerkson, CRD Planning Services, Director de Vries, and CRD administration,
 
@@ -450,10 +473,6 @@ I am asking the CRD to:
 5. Create accessible, fair, and realistic transition pathways for existing seasonal-use structures, with clear criteria, practical options, reasonable timelines, and an approach that reflects the history, lot patterns, seasonal use, weather constraints, contractor availability, and rural reality of the Deka Lake / Interlakes area.
 
 6. Focus enforcement on actual hazards and material impacts, not ordinary seasonal enjoyment of private rural land.
-
-7. Release public information about enforcement trends in Area L and Deka Lake, including whether files are complaint-driven, staff-initiated, Area Director-initiated, or opened through proactive patrol.
-
-8. Confirm whether any boundary review, service-area review, tax-base study, municipal expansion discussion, or intergovernmental planning process is connected to current enforcement priorities in Deka Lake or Area L.
 
 Deka Lake property owners are not asking for special treatment. We are asking for fair treatment.
 
@@ -498,10 +517,6 @@ I am asking the CRD to:
 
 6. Focus enforcement on actual hazards and material impacts, not ordinary seasonal enjoyment of private rural land.
 
-7. Release public information about enforcement trends in Area L and Deka Lake, including whether files are complaint-driven, staff-initiated, Area Director-initiated, or opened through proactive patrol.
-
-8. Confirm whether any boundary review, service-area review, tax-base study, municipal expansion discussion, or intergovernmental planning process is connected to current enforcement priorities in Deka Lake or Area L.
-
 Deka Lake property owners are not asking for special treatment. We are asking for fair treatment.
 
 Please treat this message as a request for meaningful public engagement and as an early submission into any OCP, zoning, building bylaw, or enforcement policy review affecting Deka Lake and the Interlakes.
@@ -519,6 +534,36 @@ ${name || "[Name]"}${connection ? "\n" + connection : "\n[Connection to Deka Lak
     const resetMessage = document.getElementById("resetMessage");
     const status = document.getElementById("status");
     const addressBox = document.getElementById("addressBox");
+    const socialText = document.getElementById("socialText");
+    const copySocial = document.getElementById("copySocial");
+    const facebookShare = document.getElementById("facebookShare");
+    const nativeShare = document.getElementById("nativeShare");
+
+    socialText.value = SOCIAL_TEXT;
+    facebookShare.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CAMPAIGN_URL)}`;
+
+    async function shareCampaign() {
+      const shareData = {
+        title: "Deka Lake needs fair rules before enforcement escalates",
+        text: SOCIAL_TEXT.replace(`\n\n${CAMPAIGN_URL}`, ""),
+        url: CAMPAIGN_URL
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          setStatus("Share sheet opened.");
+        } catch (err) {
+          if (err && err.name !== "AbortError") {
+            await copyText(SOCIAL_TEXT, "Share text copied. You can paste it into Facebook or a message.");
+            window.open(facebookShare.href, "_blank", "noopener");
+          }
+        }
+      } else {
+        await copyText(SOCIAL_TEXT, "Share text copied. Paste it into Facebook after the share window opens.");
+        window.open(facebookShare.href, "_blank", "noopener");
+      }
+    }
 
     function getMessageLength() {
       return document.querySelector('input[name="messageLength"]:checked').value;
@@ -612,6 +657,8 @@ ${name || "[Name]"}${connection ? "\n" + connection : "\n[Connection to Deka Lak
     copyBody.addEventListener("click", () => copyText(emailBody.value, "Email text copied."));
     copyAddresses.addEventListener("click", () => copyText(allRecipientsText(), "Recipients copied."));
     resetMessage.addEventListener("click", resetFromFields);
+    copySocial.addEventListener("click", () => copyText(socialText.value, "Suggested Facebook post copied."));
+    nativeShare.addEventListener("click", shareCampaign);
   </script>
 </body>
 </html>
